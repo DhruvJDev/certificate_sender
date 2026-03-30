@@ -1,0 +1,27 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+
+# OS files
+.DS_Store
+
+# Flask and local artifacts
+instance/
+.pytest_cache/
+
+# Upload artifacts
+uploads/*
+!uploads/.gitkeep
+
+# Common generated files
+*.log
+*.sqlite3
