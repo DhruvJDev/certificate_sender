@@ -1,50 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulk Email Sender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <div class="background-glow glow-1"></div>
+    <div class="background-glow glow-2"></div>
 
-<h2>📧 Bulk Email Sender</h2>
+    <header class="site-header panel panel-delay-1">
+        <div>
+            <p class="brand-kicker">Certificate Sender</p>
+            <h2>Bulk Delivery Dashboard</h2>
+        </div>
+        <p class="header-note">Upload once. Personalize fast. Deliver confidently.</p>
+    </header>
 
-<form action="/send" method="post" enctype="multipart/form-data">
-    
-    <label>Upload Excel File:</label><br>
-    <input type="file" name="excel" required><br><br>
+    <main class="app-shell">
+        <section class="intro panel panel-delay-1">
+            <p class="eyebrow">Certificate Workflow</p>
+            <h1>Send Personalized Certificate Emails in Minutes</h1>
+            <p class="lead">
+                Upload your recipient sheet and PDF certificates, customize the message,
+                and launch your campaign in one click.
+            </p>
 
-    <label>Upload PDF Files:</label><br>
-    <input type="file" name="pdfs" multiple required><br><br>
+            <div class="stats-grid">
+                <article>
+                    <span class="stat-value">1</span>
+                    <span class="stat-label">Excel Upload</span>
+                </article>
+                <article>
+                    <span class="stat-value">N</span>
+                    <span class="stat-label">PDF Certificates</span>
+                </article>
+                <article>
+                    <span class="stat-value">{name}</span>
+                    <span class="stat-label">Message Placeholder</span>
+                </article>
+            </div>
+        </section>
 
-    <label>Email Message:</label><br>
-    <textarea name="message" rows="8" cols="50">
-Hi {name},
+        <section class="panel panel-delay-2">
+            <form action="/send" method="post" enctype="multipart/form-data" class="mail-form">
+                <div class="field-group">
+                    <label for="excel">Upload Excel File</label>
+                    <input id="excel" type="file" name="excel" accept=".xlsx,.xls" required>
+                    <small>Expected columns: Name, Email, FileName</small>
+                </div>
+
+                <div class="field-group">
+                    <label for="pdfs">Upload PDF Files</label>
+                    <input id="pdfs" type="file" name="pdfs" accept=".pdf" multiple required>
+                    <small>Filenames must match the FileName column exactly.</small>
+                </div>
+
+                <div class="field-group">
+                    <label for="message">Email Message</label>
+                    <textarea id="message" name="message" rows="8" required>Hi {name},
 
 Your certificate is attached.
 
-Thank you
-    </textarea><br><br>
+Thank you</textarea>
+                </div>
 
-    <button type="submit">Send Emails</button>
-</form>
+                <button type="submit">Send Emails</button>
+            </form>
+        </section>
 
-{% if success %}
-    <h3 style="color:green;">✅ Success:</h3>
-    <ul>
-        {% for s in success %}
-            <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+        {% if success or failed %}
+        <section class="results panel panel-delay-3">
+            {% if success %}
+            <article class="result-box success-box">
+                <h2>Success</h2>
+                <ul>
+                    {% for s in success %}
+                    <li>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+            {% endif %}
 
-{% if failed %}
-    <h3 style="color:red;">❌ Failed:</h3>
-    <ul>
-        {% for f in failed %}
-            <li>{{ f }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+            {% if failed %}
+            <article class="result-box failed-box">
+                <h2>Failed</h2>
+                <ul>
+                    {% for f in failed %}
+                    <li>{{ f }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+            {% endif %}
+        </section>
+        {% endif %}
+    </main>
 
+    <footer class="site-footer panel panel-delay-3">
+        <p>&copy; 2026 Certificate Sender</p>
+    </footer>
 </body>
 </html>
