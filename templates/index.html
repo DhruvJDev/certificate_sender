@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Email Sender</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>📧 Bulk Email Sender</h2>
+
+<form action="/send" method="post" enctype="multipart/form-data">
+    
+    <label>Upload Excel File:</label><br>
+    <input type="file" name="excel" required><br><br>
+
+    <label>Upload PDF Files:</label><br>
+    <input type="file" name="pdfs" multiple required><br><br>
+
+    <label>Email Message:</label><br>
+    <textarea name="message" rows="8" cols="50">
+Hi {name},
+
+Your certificate is attached.
+
+Thank you
+    </textarea><br><br>
+
+    <button type="submit">Send Emails</button>
+</form>
+
+{% if success %}
+    <h3 style="color:green;">✅ Success:</h3>
+    <ul>
+        {% for s in success %}
+            <li>{{ s }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if failed %}
+    <h3 style="color:red;">❌ Failed:</h3>
+    <ul>
+        {% for f in failed %}
+            <li>{{ f }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+</body>
+</html>
