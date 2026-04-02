@@ -4,11 +4,15 @@ from email.message import EmailMessage
 import os
 from config import EMAIL, PASSWORD
 
-def send_bulk_emails(excel_path, pdf_folder, message_template):
+def send_bulk_emails(excel_path, pdf_folder, message_template, subject_template="Your Certificate", cc="", bcc=""):
     df = pd.read_excel(excel_path)
 
     success = []
     failed = []
+    
+    # Parse CC and BCC addresses
+    cc_list = [email.strip() for email in cc.split(',') if email.strip()] if cc else []
+    bcc_list = [email.strip() for email in bcc.split(',') if email.strip()] if bcc else []
 
     for index, row in df.iterrows():
         try:
@@ -17,9 +21,19 @@ def send_bulk_emails(excel_path, pdf_folder, message_template):
             file_name = row['FileName']
 
             msg = EmailMessage()
-            msg['Subject'] = "Your Certificate"
+            # Personalize subject
+            subject = subject_template.replace("{name}", name)
+            msg['Subject'] = subject
             msg['From'] = EMAIL
             msg['To'] = receiver
+            
+            # Add CC recipients
+            if cc_list:
+                msg['Cc'] = ', '.join(cc_list)
+            
+            # Add BCC recipients
+            if bcc_list:
+                msg['Bcc'] = ', '.join(bcc_list)
 
             # Personalize message
             message = message_template.replace("{name}", name)

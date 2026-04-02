@@ -44,6 +44,16 @@
                     <span class="stat-label">Message Placeholder</span>
                 </article>
             </div>
+
+            <!-- Excel Preview Section -->
+            <div id="previewSection" class="preview-section" style="display: none;">
+                <div class="field-group">
+                    <label>Available Fields (Click to insert into message)</label>
+                    <div id="fieldsList" class="fields-list"></div>
+                </div>
+
+                <div id="tablePreview" class="table-preview"></div>
+            </div>
         </section>
 
         <section class="panel panel-delay-2">
@@ -58,6 +68,24 @@
                     <label for="pdfs">Upload PDF Files</label>
                     <input id="pdfs" type="file" name="pdfs" accept=".pdf" multiple required>
                     <small>Filenames must match the FileName column exactly.</small>
+                </div>
+
+                <div class="field-group">
+                    <label for="subject">Email Subject</label>
+                    <input id="subject" type="text" name="subject" value="Your Certificate" required>
+                    <small>Use {name} to personalize with recipient's name</small>
+                </div>
+
+                <div class="field-group">
+                    <label for="cc">CC Addresses (Optional)</label>
+                    <input id="cc" type="text" name="cc" placeholder="email1@example.com, email2@example.com">
+                    <small>Separate multiple emails with commas</small>
+                </div>
+
+                <div class="field-group">
+                    <label for="bcc">BCC Addresses (Optional)</label>
+                    <input id="bcc" type="text" name="bcc" placeholder="email1@example.com, email2@example.com">
+                    <small>Separate multiple emails with commas</small>
                 </div>
 
                 <div class="field-group">
@@ -103,5 +131,92 @@ Thank you</textarea>
     <footer class="site-footer panel panel-delay-3">
         <p>&copy; 2026 Certificate Sender</p>
     </footer>
+
+    <script>
+        const excelInput = document.getElementById('excel');
+        const previewSection = document.getElementById('previewSection');
+        const fieldsList = document.getElementById('fieldsList');
+        const tablePreview = document.getElementById('tablePreview');
+        const messageTextarea = document.getElementById('message');
+
+        excelInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                previewSection.style.display = 'none';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('excel', file);
+
+            previewSection.style.display = 'block';
+            fieldsList.innerHTML = '<p class="preview-empty">Loading preview...</p>';
+            tablePreview.innerHTML = '<p class="preview-empty">Loading preview...</p>';
+
+            fetch('/preview-excel', {
+                method: 'POST',
+                body: formData
+            })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Unable to read Excel file');
+                    }
+
+                    const fields = data.headers || [];
+                    const rows = data.rows || [];
+
+                    if (fields.length === 0) {
+                        previewSection.style.display = 'none';
+                        return;
+                    }
+
+                    fieldsList.innerHTML = fields.map(field =>
+                        `<span class="field-badge" onclick="insertField('${String(field).replace(/'/g, "\\'")}')">{${field}}</span>`
+                    ).join('');
+
+                    if (rows.length === 0) {
+                        tablePreview.innerHTML = '<p class="preview-empty">No data rows found in the Excel sheet.</p>';
+                        return;
+                    }
+
+                    let tableHTML = '<table class="preview-table"><thead><tr><th>S.No.</th>';
+                    fields.forEach(field => {
+                        tableHTML += `<th>${field}</th>`;
+                    });
+                    tableHTML += '</tr></thead><tbody>';
+
+                    rows.forEach((row, index) => {
+                        tableHTML += '<tr>';
+                        tableHTML += `<td>${index + 1}</td>`;
+                        fields.forEach(field => {
+                            const value = row[field] ?? '';
+                            tableHTML += `<td>${value}</td>`;
+                        });
+                        tableHTML += '</tr>';
+                    });
+                    tableHTML += '</tbody></table>';
+
+                    tablePreview.innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    console.error('Error reading Excel file:', error);
+                    alert(error.message || 'Error reading Excel file. Please make sure it is a valid .xlsx or .xls file.');
+                    previewSection.style.display = 'none';
+                });
+        });
+
+        function insertField(fieldName) {
+            const placeholder = '{' + fieldName + '}';
+            const textarea = messageTextarea;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            
+            textarea.value = text.substring(0, start) + placeholder + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
+        }
+    </script>
 </body>
 </html>

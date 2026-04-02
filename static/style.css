@@ -302,6 +302,84 @@ button:active {
     line-height: 1.35;
 }
 
+.preview-section {
+    padding: 12px;
+    background: rgba(15, 118, 110, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-top: 18px;
+}
+
+.fields-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.field-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent) 0%, #128f85 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    user-select: none;
+}
+
+.field-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(15, 118, 110, 0.25);
+}
+
+.table-preview {
+    max-height: 240px;
+    overflow: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: white;
+}
+
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.preview-table thead {
+    background: rgba(15, 118, 110, 0.1);
+    border-bottom: 2px solid var(--border);
+}
+
+.preview-table th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--accent-dark);
+}
+
+.preview-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    word-break: break-word;
+}
+
+.preview-table tbody tr:hover {
+    background: rgba(15, 118, 110, 0.05);
+}
+
+.preview-empty {
+    margin: 0;
+    padding: 12px;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+}
+
 .success-box {
     color: var(--success);
     background: var(--success-bg);
